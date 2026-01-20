@@ -11,20 +11,49 @@ class TodoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Todo Manager',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFFFFC107),
           brightness: Brightness.light,
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           centerTitle: false,
           elevation: 0,
-          backgroundColor: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.light,
-          ).primary,
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
+          scrolledUnderElevation: 0,
+        ),
+        scaffoldBackgroundColor: const Color(0xFFFAFAFA),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xFFFFC107),
+          foregroundColor: Colors.black87,
+          elevation: 4,
+        ),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFFAFAFA),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFFFC107), width: 2),
+          ),
         ),
       ),
       home: const TodoHomePage(),
@@ -78,21 +107,29 @@ class _TodoHomePageState extends State<TodoHomePage> {
   @override
   Widget build(BuildContext context) {
     final todaysTasks = _getTasksForDate(_selectedDate);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todo Manager'),
+        title: const Text(
+          'Tasks',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            letterSpacing: -0.5,
+          ),
+        ),
         elevation: 0,
         actions: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
               child: Text(
-                _formatDateForAppBar(_selectedDate),
+                _formatDate(_selectedDate),
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
+                  color: Colors.black54,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -101,54 +138,79 @@ class _TodoHomePageState extends State<TodoHomePage> {
       ),
       body: Column(
         children: [
+          const SizedBox(height: 16),
           // Date selector
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Select Date',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.0,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
-                      child: FilledButton.tonal(
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFC107),
+                          foregroundColor: Colors.black87,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                         onPressed: () => _selectDate(context),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.calendar_today),
+                            const Icon(Icons.calendar_today, size: 18),
                             const SizedBox(width: 8),
-                            Text(_formatDate(_selectedDate)),
+                            Text(
+                              _formatDateFull(_selectedDate),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () => _changeDate(-1),
-                      tooltip: 'Previous day',
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_forward),
-                      onPressed: () => _changeDate(1),
-                      tooltip: 'Next day',
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new, size: 16),
+                            onPressed: () => _changeDate(-1),
+                            tooltip: 'Previous day',
+                            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                          ),
+                          Container(
+                            height: 24,
+                            width: 1,
+                            color: Colors.black12,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                            onPressed: () => _changeDate(1),
+                            tooltip: 'Next day',
+                            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -162,23 +224,32 @@ class _TodoHomePageState extends State<TodoHomePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.inbox_outlined,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.outline,
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFFFC107).withOpacity(0.15),
+                          ),
+                          child: const Icon(
+                            Icons.inbox_outlined,
+                            size: 50,
+                            color: Color(0xFFFFC107),
+                          ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         Text(
-                          'No tasks yet',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
+                          'No tasks today',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Add a task to get started',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.outlineVariant,
+                          'Tap the button below to add a new task',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.black54,
                           ),
                         ),
                       ],
@@ -207,120 +278,145 @@ class _TodoHomePageState extends State<TodoHomePage> {
   }
 
   Widget _buildTaskCard(Task task, BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(12),
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => _showEditTaskDialog(context, task),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: task.isCompleted
-                ? Theme.of(context).colorScheme.surfaceVariant
-                : Theme.of(context).colorScheme.surface,
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => _toggleTaskCompletion(task),
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  margin: const EdgeInsets.only(top: 2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: task.isCompleted
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.outline,
-                      width: 2,
-                    ),
-                    color: task.isCompleted
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                  child: task.isCompleted
-                      ? Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        )
-                      : null,
-                ),
+    return Dismissible(
+      key: ValueKey(task.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: Colors.red.shade400,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.delete_outline, color: Colors.white),
+      ),
+      onDismissed: (direction) => _deleteTask(task),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _showEditTaskDialog(context, task),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: task.isCompleted ? Colors.grey.shade100 : Colors.white,
+              border: Border.all(
+                color: task.isCompleted
+                    ? const Color(0xFFFFC107).withOpacity(0.3)
+                    : Colors.black12,
+                width: 1.5,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task.title,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        decoration: task.isCompleted
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () => _toggleTaskCompletion(task),
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    margin: const EdgeInsets.only(top: 2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: task.isCompleted
+                          ? const Color(0xFFFFC107)
+                          : Colors.white,
+                      border: Border.all(
                         color: task.isCompleted
-                            ? Theme.of(context).colorScheme.outline
-                            : Theme.of(context).colorScheme.onSurface,
+                            ? const Color(0xFFFFC107)
+                            : Colors.black26,
+                        width: 2,
                       ),
                     ),
-                    if (task.description.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                    child: task.isCompleted
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: Colors.black87,
+                          )
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        task.description,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
+                        task.title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                           decoration: task.isCompleted
                               ? TextDecoration.lineThrough
                               : TextDecoration.none,
+                          color: task.isCompleted
+                              ? Colors.black38
+                              : Colors.black87,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
+                      if (task.description.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          task.description,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: task.isCompleted
+                                ? Colors.black26
+                                : Colors.black54,
+                            decoration: task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      _showEditTaskDialog(context, task);
+                    } else if (value == 'delete') {
+                      _deleteTask(task);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18, color: Color(0xFFFFC107)),
+                          SizedBox(width: 8),
+                          Text('Edit'),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, size: 18, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text('Delete'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 12),
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    _showEditTaskDialog(context, task);
-                  } else if (value == 'delete') {
-                    _deleteTask(task);
-                  }
-                },
-                itemBuilder: (BuildContext context) => [
-                  const PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, size: 20),
-                        SizedBox(width: 8),
-                        Text('Edit'),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, size: 20, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -575,7 +671,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
-  String _formatDateForAppBar(DateTime date) {
+  String _formatDateFull(DateTime date) {
     final months = [
       'January',
       'February',
